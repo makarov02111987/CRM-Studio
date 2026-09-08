@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRM Studio • Админ-панель</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#111827;background:#f4f6fb}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:1200px;margin:0 auto;padding:28px}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}
+h1{margin:0}.muted{color:#6b7280}.card{background:white;border:1px solid #e5e7eb;border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.05);margin-bottom:18px}
+input,select,textarea,button{font:inherit}input,select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px}button{border:0;border-radius:10px;padding:12px 16px;cursor:pointer}.primary{background:#111827;color:#fff}.danger{background:#fee2e2;color:#991b1b}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.table{width:100%;border-collapse:collapse}.table th,.table td{padding:12px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}.table th{font-size:13px;color:#6b7280}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef2ff;font-size:12px}.hidden{display:none}.actions{display:flex;gap:8px;flex-wrap:wrap}
+pre{white-space:pre-wrap;background:#0f172a;color:#e5e7eb;padding:16px;border-radius:12px;max-height:420px;overflow:auto}
+@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.table{font-size:13px}}@media(max-width:560px){.wrap{padding:14px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>CRM Studio</h1><div class="muted">Админ-панель заявок</div></div><button onclick="logout()">Выйти</button></div>
+
+  <section id="login" class="card">
+    <h2>Вход</h2>
+    <p class="muted">Введите административный пароль. Он хранится в Cloudflare как секрет и не показывается клиентам.</p>
+    <div class="actions"><input id="password" type="password" placeholder="Админ-пароль"><button class="primary" onclick="login()">Войти</button></div>
+    <p id="loginMsg" class="muted"></p>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="card">
+      <div class="grid">
+        <div><label>Статус</label><select id="filterStatus"><option value="">Все</option><option>Новая</option><option>Связались</option><option>КП</option><option>Договор</option><option>В работе</option><option>Завершено</option></select></div>
+        <div><label>Поиск</label><input id="search" placeholder="Компания, имя, email"></div>
+        <div style="display:flex;align-items:end"><button class="primary" onclick="loadLeads()">Обновить</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <table class="table"><thead><tr><th>Дата</th><th>Клиент</th><th>Контакты</th><th>Проект</th><th>Внутренняя оценка</th><th>Статус</th><th></th></tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div id="detail" class="card hidden"></div>
+  </section>
+</div>
+<script>
+let token=sessionStorage.getItem('crm_admin_token')||'';
+const $=id=>document.getElementById(id);
+function showApp(){ $('login').classList.toggle('hidden',!!token); $('app').classList.toggle('hidden',!token); if(token) loadLeads(); }
+async function login(){
+  const p=$('password').value;
+  const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});
+  if(!r.ok){$('loginMsg').textContent='Неверный пароль';return}
+  const j=await r.json(); token=j.token; sessionStorage.setItem('crm_admin_token',token); showApp();
+}
+function logout(){sessionStorage.removeItem('crm_admin_token');token='';showApp()}
+async function api(url,opt={}){
+  opt.headers=Object.assign({},opt.headers||{}, {'Authorization':'Bearer '+token});
+  const r=await fetch(url,opt); if(r.status===401){logout();throw Error('auth')} return r;
+}
+async function loadLeads(){
+  const r=await api('/api/leads'); const data=await r.json();
+  const status=$('filterStatus').value.toLowerCase(), q=$('search').value.toLowerCase();
+  const rows=data.filter(x=>(!status||x.status.toLowerCase()===status)&&(!q||[x.org,x.name,x.email,x.phone].join(' ').toLowerCase().includes(q)));
+  $('tbody').innerHTML=rows.map(x=>`<tr>
+    <td>${new Date(x.created_at).toLocaleString('ru-RU')}</td>
+    <td><strong>${esc(x.org)}</strong><br>${esc(x.name)}</td>
+    <td>${esc(x.phone||'')}<br>${esc(x.email)}</td>
+    <td><span class="badge">${esc(x.internal_level)}</span></td>
+    <td>${Number(x.internal_price).toLocaleString('ru-RU')} ₽</td>
+    <td><select onchange="setStatus('${x.id}',this.value)">${['Новая','Связались','КП','Договор','В работе','Завершено'].map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td><button onclick="showLead('${x.id}')">Открыть</button></td>
+  </tr>`).join('') || '<tr><td colspan="7">Заявок нет</td></tr>';
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+async function setStatus(id,status){await api('/api/leads/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});loadLeads()}
+async function showLead(id){
+  const r=await api('/api/leads/'+id); const x=await r.json();
+  $('detail').classList.remove('hidden');
+  $('detail').innerHTML=`<h2>${esc(x.org)}</h2><p><b>${esc(x.name)}</b> · ${esc(x.phone||'')} · ${esc(x.email)}</p>
+  <p>Статус: <b>${esc(x.status)}</b> · Внутренняя оценка: <b>${Number(x.internal_price).toLocaleString('ru-RU')} ₽</b> · ${esc(x.internal_level)}</p>
+  <h3>Сформированный промт</h3><pre>${esc(x.prompt)}</pre>
+  <div class="actions"><button onclick="copyPrompt()">Скопировать промт</button><button class="danger" onclick="closeDetail()">Закрыть</button></div>`;
+  window.currentPrompt=x.prompt;
+}
+function copyPrompt(){navigator.clipboard.writeText(window.currentPrompt||'')}
+function closeDetail(){$('detail').classList.add('hidden')}
+$('filterStatus').onchange=loadLeads;$('search').oninput=loadLeads;showApp();
+</script>
+</body>
+</html>

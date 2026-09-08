@@ -1,0 +1,8 @@
+name = "crm-studio"
+compatibility_date = "2026-09-08"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "crm-studio-db"
+database_id = "PUT_YOUR_D1_DATABASE_ID_HERE"

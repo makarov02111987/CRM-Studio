@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRM Studio • Бриф на разработку CRM</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#697386;--line:#dfe4ec;--accent:#111827;--accent2:#2563eb;--soft:#eef3ff;--ok:#16803c}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.container{max-width:1050px;margin:auto;padding:22px 18px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:8px 0 22px}.brand{font-weight:900;letter-spacing:-.5px}.brand span{color:var(--accent2)}.badge{font-size:12px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#101827,#263657);color:#fff;border-radius:28px;padding:38px 34px;margin-bottom:20px;box-shadow:0 15px 40px #14213d20}.hero h1{font-size:clamp(28px,5vw,46px);line-height:1.02;margin:0 0 13px;letter-spacing:-1.5px}.hero p{max-width:720px;color:#dce5f5;line-height:1.6;margin:0}.hero .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.chip{background:#ffffff14;border:1px solid #ffffff22;padding:7px 10px;border-radius:999px;font-size:12px}
+.progressWrap{position:sticky;top:0;z-index:5;background:#f5f7fbed;backdrop-filter:blur(10px);padding:12px 0}.progressTop{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px}.progress{height:7px;background:#e4e8ef;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--accent2);transition:.25s}
+.card{background:var(--card);border:1px solid #e8ebf0;border-radius:20px;padding:25px;margin:15px 0;box-shadow:0 6px 24px #15213b08}.card h2{margin:0 0 5px;font-size:20px}.sub{color:var(--muted);font-size:13px;margin-bottom:20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.full{grid-column:1/-1}label{font-size:13px;font-weight:750;display:block;margin-bottom:7px}input,textarea,select{width:100%;font:inherit;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:#fff;color:var(--text);outline:none}input:focus,textarea:focus,select:focus{border-color:#8eb0ff;box-shadow:0 0 0 3px #2563eb14}textarea{min-height:90px;resize:vertical}.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.checks label{font-weight:500;margin:0;background:#f8f9fb;border:1px solid #edf0f4;padding:11px;border-radius:11px;cursor:pointer}.checks input{width:auto;margin-right:7px}.required{color:#d22}.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.actions{position:sticky;bottom:14px;z-index:6;display:flex;gap:10px;align-items:center;background:#ffffffed;backdrop-filter:blur(12px);border:1px solid #dfe4ec;padding:12px;border-radius:16px;box-shadow:0 10px 35px #0002}.actions button{border:0;border-radius:11px;padding:13px 19px;font-weight:850;font-size:15px;cursor:pointer}.primary{background:#111827;color:#fff;flex:1}.secondary{background:#edf0f4;color:#172033}.primary:disabled{opacity:.65;cursor:wait}
+.success{display:none;background:#ecfdf3;border:1px solid #b9e8cb;color:#146c35;border-radius:16px;padding:15px;margin:15px 0}.success strong{display:block;margin-bottom:3px}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+.modal{display:none;position:fixed;inset:0;background:#10182799;z-index:20;align-items:center;justify-content:center;padding:20px}.modalBox{background:#fff;border-radius:20px;max-width:520px;width:100%;padding:25px}.modalBox h3{margin-top:0}.modalBox button{border:0;border-radius:10px;padding:11px 16px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
+@media(max-width:700px){.grid,.checks{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding:28px 22px}.card{padding:20px}.actions{flex-direction:column}.actions button{width:100%}.top{align-items:flex-start;gap:10px}}
+
+/* v3 landing + estimate */
+.landing{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;margin-bottom:18px}.landingCard{background:#fff;border:1px solid #e8ebf0;border-radius:22px;padding:24px}.landingCard h3{font-size:22px;margin:0 0 9px}.landingCard p{color:var(--muted);line-height:1.55;margin:0}.features{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}.feature{background:#f8f9fb;border-radius:11px;padding:11px;font-size:13px}.priceBox{background:#111827;color:#fff;border-radius:22px;padding:24px}.priceBox small{color:#aeb9cc}.price{font-size:34px;font-weight:900;margin:8px 0}.priceRange{font-size:13px;color:#c9d3e5}.calc{margin-top:15px;padding-top:15px;border-top:1px solid #ffffff20}.calcRow{display:flex;justify-content:space-between;font-size:13px;margin:7px 0;color:#d7deea}.estimateNote{font-size:12px;color:#9aa8bd;margin-top:12px;line-height:1.45}.navBtns{display:flex;gap:8px;margin-top:15px}.navBtns button{border:0;border-radius:10px;padding:10px 13px;font-weight:750;cursor:pointer}.goForm{background:#fff;color:#111827}.scrollTop{background:#ffffff18;color:#fff;border:1px solid #ffffff25!important}
+@media(max-width:760px){.landing{grid-template-columns:1fr}.features{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top"><div class="brand">CRM <span>STUDIO</span></div><div class="badge">Бриф v2.0</div></div>
+
+
+  <section class="landing">
+    <div class="landingCard">
+      <h3>CRM, которая подходит именно вашему бизнесу</h3>
+      <p>Ответьте на вопросы, чтобы мы поняли процессы, роли сотрудников и нужные интеграции. После заполнения вы получите технический промт, а мы сможем быстро оценить объём проекта.</p>
+      <div class="features">
+        <div class="feature">⚙️ Бизнес-процессы</div>
+        <div class="feature">👥 Роли и права</div>
+        <div class="feature">🔗 Интеграции</div>
+        <div class="feature">🤖 ИИ и автоматизация</div>
+      </div>
+      <div class="navBtns"><button class="goForm" type="button" onclick="document.getElementById('crmForm').scrollIntoView({behavior:'smooth'})">Начать бриф →</button></div>
+    </div>
+    <div class="priceBox">
+      <small>Предварительная оценка</small>
+      <div class="price" id="price">от 10 000 ₽</div>
+      <div class="priceRange" id="priceLabel">Заполните бриф, и оценка уточнится</div>
+      <div class="calc">
+        <div class="calcRow"><span>Модули</span><b id="moduleCount">0</b></div>
+        <div class="calcRow"><span>Интеграции</span><b id="integrationCount">0</b></div>
+        <div class="calcRow"><span>Сложность</span><b id="complexity">Базовая</b></div>
+      </div>
+      <div class="estimateNote">Это ориентир для предварительной оценки, а не коммерческое предложение. Финальная стоимость определяется после анализа требований.</div>
+    </div>
+  </section>
+
+  <section class="hero">
+    <h1>Создадим CRM под вашу организацию</h1>
+    <p>Заполните бриф. На его основе будет автоматически сформировано техническое задание для разработки CRM, а результат отправится нашей команде.</p>
+    <div class="chips"><div class="chip">⚡ 10–15 минут</div><div class="chip">🧩 Под ваши процессы</div><div class="chip">📄 Готовый промт</div><div class="chip">🔐 Данные отправляются защищённым соединением</div></div>
+  </section>
+
+  <div class="progressWrap">
+    <div class="progressTop"><span>Заполнение брифа</span><strong id="percent">0%</strong></div>
+    <div class="progress"><i id="bar"></i></div>
+  </div>
+
+  <form id="crmForm" novalidate>
+    <section class="card"><h2>1. О вашей организации</h2><div class="sub">Базовая информация о будущем проекте.</div>
+      <div class="grid">
+        <div><label>Название организации <span class="required">*</span></label><input required name="org" placeholder="Например, Алтай-Тур"></div>
+        <div><label>Чем занимается <span class="required">*</span></label><input required name="business" placeholder="Туризм, производство, услуги..."></div>
+        <div class="full"><label>Услуги или товары</label><textarea name="products"></textarea></div>
+        <div><label>Сотрудников</label><input name="employees"></div><div><label>Филиалов / отделов</label><input name="branches"></div>
+      </div>
+    </section>
+
+    <section class="card"><h2>2. Главная задача CRM</h2><div class="sub">Что должна улучшить система в первую очередь?</div>
+      <div class="checks">
+        <label><input type="checkbox" name="goals" value="Работа с клиентами">Работа с клиентами</label><label><input type="checkbox" name="goals" value="Продажи">Продажи</label>
+        <label><input type="checkbox" name="goals" value="Заявки">Заявки</label><label><input type="checkbox" name="goals" value="Заказы">Заказы</label>
+        <label><input type="checkbox" name="goals" value="Задачи">Задачи</label><label><input type="checkbox" name="goals" value="Документы">Документы</label>
+        <label><input type="checkbox" name="goals" value="Финансы">Финансы</label><label><input type="checkbox" name="goals" value="Аналитика">Аналитика</label>
+      </div>
+      <div style="margin-top:15px"><label>Какие проблемы должна решить CRM?</label><textarea name="problems" placeholder="Например: заявки теряются, менеджеры забывают перезванивать..."></textarea></div>
+    </section>
+
+    <section class="card"><h2>3. Клиенты</h2><div class="sub">Опишите будущую базу клиентов.</div>
+      <div class="grid">
+        <div><label>Типы клиентов</label><input name="clientTypes" placeholder="Физлица, юрлица, ИП..."></div><div><label>Примерное количество клиентов</label><input name="clientCount"></div>
+        <div class="full"><label>Какие данные хранить?</label><textarea name="clientFields" placeholder="ФИО, телефон, email, компания, история обращений, документы..."></textarea></div>
+      </div>
+    </section>
+
+    <section class="card"><h2>4. Заявки и продажи</h2><div class="sub">Опишите путь заявки от первого обращения до сделки.</div>
+      <div class="grid">
+        <div class="full"><label>Откуда приходят заявки?</label><input name="leadSources" placeholder="Сайт, Telegram, телефон, реклама..."></div>
+        <div class="full"><label>Этапы / воронка</label><textarea name="pipeline" placeholder="Новая → Связались → Предложение → Оплата → Завершено"></textarea></div>
+        <div><label>Заявок в месяц</label><input name="leadCount"></div><div><label>Напоминания менеджерам?</label><select name="reminders"><option>Да</option><option>Нет</option><option>Не знаю</option></select></div>
+      </div>
+    </section>
+
+    <section class="card"><h2>5. Сотрудники и права</h2><div class="sub">Кто и что сможет делать в системе.</div>
+      <div class="grid">
+        <div class="full"><label>Роли пользователей</label><input name="roles" placeholder="Администратор, руководитель, менеджер..."></div>
+        <div class="full"><label>Права и ограничения</label><textarea name="permissions" placeholder="Менеджер видит своих клиентов, руководитель видит всё..."></textarea></div>
+      </div>
+    </section>
+
+    <section class="card"><h2>6. Задачи и календарь</h2>
+      <div class="grid"><div class="full"><label>Какие задачи ставят сотрудники?</label><textarea name="tasks"></textarea></div>
+      <div><label>Календарь</label><select name="calendar"><option>Да</option><option>Нет</option></select></div><div><label>Уведомления</label><select name="notifications"><option>Да</option><option>Нет</option></select></div></div>
+    </section>
+
+    <section class="card"><h2>7. Коммуникации и интеграции</h2>
+      <div class="grid"><div class="full"><label>Каналы связи</label><input name="communications" placeholder="Email, Telegram, WhatsApp, телефония..."></div>
+      <div class="full"><label>Необходимые интеграции</label><textarea name="integrations" placeholder="Сайт, 1С, телефония, платежи, API..."></textarea></div></div>
+    </section>
+
+    <section class="card"><h2>8. Документы и финансы</h2>
+      <div class="grid"><div class="full"><label>Какие документы нужны?</label><textarea name="documents" placeholder="Договоры, счета, акты, КП..."></textarea></div>
+      <div class="full"><label>Что учитывать по финансам?</label><textarea name="finance" placeholder="Оплаты, задолженности, расходы, возвраты..."></textarea></div></div>
+    </section>
+
+    <section class="card"><h2>9. Аналитика</h2>
+      <div class="grid"><div class="full"><label>Что должен видеть руководитель?</label><textarea name="analytics" placeholder="Выручка, заявки, конверсия, продажи менеджеров..."></textarea></div>
+      <div><label>Экспорт Excel/PDF</label><select name="export"><option>Да</option><option>Нет</option></select></div><div><label>Dashboard</label><select name="dashboard"><option>Да</option><option>Нет</option></select></div></div>
+    </section>
+
+    <section class="card"><h2>10. Интерфейс и технологии</h2>
+      <div class="grid"><div><label>Устройства</label><input name="devices" placeholder="ПК, планшет, телефон"></div><div><label>Стиль</label><input name="style" placeholder="Современный, минималистичный..."></div>
+      <div><label>Где должна работать?</label><input name="hosting" placeholder="Браузер, сервер, локально..."></div><div><label>Предпочтительный стек</label><input name="stack" placeholder="Если знаете"></div></div>
+    </section>
+
+    <section class="card"><h2>11. ИИ и автоматизация</h2>
+      <div class="grid"><div class="full"><label>Что должен делать ИИ?</label><textarea name="ai" placeholder="Письма, анализ клиентов, расшифровка звонков, отчёты..."></textarea></div>
+      <div class="full"><label>Что автоматизировать?</label><textarea name="automation" placeholder="Распределять заявки, создавать задачи, менять статусы..."></textarea></div></div>
+    </section>
+
+    <section class="card"><h2>12. Приоритеты проекта</h2>
+      <div class="grid"><div class="full"><label>Обязательные функции первой версии</label><textarea name="mvp"></textarea></div>
+      <div class="full"><label>Что можно добавить позже?</label><textarea name="later"></textarea></div>
+      <div class="full"><label>Как выглядит идеальный рабочий день сотрудника в CRM?</label><textarea name="workflow"></textarea></div>
+      <div class="full"><label>Дополнительные требования</label><textarea name="extra"></textarea></div></div>
+    </section>
+
+    <section class="card"><h2>13. Как с вами связаться</h2><div class="sub">Эти данные нужны, чтобы мы могли обработать заявку.</div>
+      <div class="grid"><div><label>Ваше имя <span class="required">*</span></label><input required name="contactName" placeholder="Имя"></div>
+      <div><label>Телефон</label><input name="phone" placeholder="+7 ..."></div>
+      <div class="full"><label>Email <span class="required">*</span></label><input required type="email" name="contactEmail" placeholder="you@example.com"></div></div>
+    </section>
+
+    <div id="success" class="success"><strong>Готово! Бриф сформирован.</strong><span id="successText">TXT-файл скачан, а заявка отправлена.</span></div>
+    <div class="actions"><button type="submit" class="primary" id="submitBtn">ГОТОВО</button><button type="button" class="secondary" id="clearBtn">Очистить</button></div>
+  </form>
+  <div class="footer">CRM Studio • Бриф автоматически превращается в техническое задание</div>
+</div>
+
+<form id="emailForm" action="https://formsubmit.co/makarov-m-l@yandex.ru" method="POST" target="emailFrame" style="display:none">
+<input type="hidden" name="_subject" id="emailSubject"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_template" value="table">
+<input type="hidden" name="Имя заказчика" id="emailName"><input type="hidden" name="Телефон" id="emailPhone"><input type="hidden" name="Email заказчика" id="emailClientEmail"><input type="hidden" name="Предварительная оценка" id="emailEstimate">
+<textarea name="CRM_PROMPT" id="emailPrompt"></textarea></form>
+<iframe name="emailFrame" id="emailFrame" style="display:none"></iframe>
+
+<div class="modal" id="modal"><div class="modalBox"><h3>Проверьте обязательные поля</h3><p id="modalText"></p><button onclick="document.getElementById('modal').style.display='none'">Понятно</button></div></div>
+
+<script>
+const form=document.getElementById('crmForm'), percent=document.getElementById('percent'), bar=document.getElementById('bar');
+const fields=[...form.querySelectorAll('input,textarea,select')];
+function progress(){
+  const relevant=fields.filter(x=>x.type!=='checkbox');
+  const filled=relevant.filter(x=>String(x.value).trim()).length;
+  const pct=Math.min(100,Math.round(filled/relevant.length*100));
+  percent.textContent=pct+'%';bar.style.width=pct+'%';
+}
+fields.forEach(x=>x.addEventListener('input',progress)); progress();
+
+function val(name){return (form.elements[name]?.value||'').trim()||'Не указано'}
+function checks(name){return [...form.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value).join(', ')||'Не указано'}
+function esc(s){return s}
+
+
+function estimate(){
+  // Внутренняя оценка сохраняется только для технического расчёта.
+  // Заказчику показываем исключительно публичную цену "от 10 000 ₽".
+  const checked = [...document.querySelectorAll('input[type="checkbox"]:checked')].length;
+  const textIds = ['pipeline','integrations','documents','finance','analytics','ai','automation','workflow','extra'];
+  const filled = textIds.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim();
+  }).length;
+  const internalScore = checked + filled * 2;
+
+  let internalPrice = 10000;
+  let internalLevel = 'Старт';
+  if (internalScore >= 17) { internalPrice = 400000; internalLevel = 'Сложный'; }
+  else if (internalScore >= 12) { internalPrice = 250000; internalLevel = 'Расширенный'; }
+  else if (internalScore >= 7) { internalPrice = 150000; internalLevel = 'Стандарт'; }
+
+  // Публичный интерфейс всегда показывает только минимальную цену.
+  const priceEl = document.getElementById('price');
+  if (priceEl) priceEl.textContent = 'от 10 000 ₽';
+
+  return {score: internalScore, price: internalPrice, level: internalLevel, publicPrice: 'от 10 000 ₽'};
+}
+fields.forEach(x=>x.addEventListener('change',estimate)); fields.forEach(x=>x.addEventListener('input',estimate)); estimate();
+
+function makePrompt(){
+const estimateText=document.getElementById('price').textContent+' | '+document.getElementById('priceLabel').textContent;
+return `ТЫ — СТАРШИЙ FULL-STACK РАЗРАБОТЧИК, СИСТЕМНЫЙ АРХИТЕКТОР И UX/UI-ДИЗАЙНЕР.
+
+ЗАДАЧА
+Спроектировать и реализовать полноценную CRM-систему для организации, используя требования заказчика ниже.
+
+КРИТИЧЕСКИЕ ТРЕБОВАНИЯ
+1. Это должна быть рабочая система, а не статичный макет.
+2. Перед кодированием предложи архитектуру, структуру проекта и схему данных.
+3. Реализуй frontend, backend, БД, API, авторизацию, роли и права доступа.
+4. Все формы должны иметь валидацию и понятные сообщения об ошибках.
+5. Предусмотри безопасность API, безопасное хранение паролей, разграничение доступа и защиту чувствительных данных.
+6. Интерфейс адаптивный, современный и удобный для ежедневной работы.
+7. Не выдумывай критически важные бизнес-процессы. Если информации не хватает, сделай разумное допущение и явно обозначь его.
+8. Код должен быть модульным, масштабируемым и пригодным для дальнейшего сопровождения.
+9. Добавь seed/test data и инструкцию запуска.
+10. Если весь проект невозможно выдать одним ответом, разбей разработку на последовательные этапы, каждый из которых должен оставаться рабочим.
+
+========================
+ПРЕДВАРИТЕЛЬНАЯ ОЦЕНКА
+${estimateText}
+
+========================
+ЗАКАЗЧИК
+========================
+Организация: ${val('org')}
+Деятельность: ${val('business')}
+Услуги/товары: ${val('products')}
+Сотрудников: ${val('employees')}
+Филиалов/отделов: ${val('branches')}
+
+ЦЕЛИ CRM:
+${checks('goals')}
+
+Проблемы:
+${val('problems')}
+
+КЛИЕНТЫ
+Типы: ${val('clientTypes')}
+Количество: ${val('clientCount')}
+Поля:
+${val('clientFields')}
+
+ЗАЯВКИ И ПРОДАЖИ
+Источники:
+${val('leadSources')}
+Воронка:
+${val('pipeline')}
+Заявок в месяц:
+${val('leadCount')}
+Напоминания:
+${val('reminders')}
+
+ПОЛЬЗОВАТЕЛИ
+Роли:
+${val('roles')}
+Права:
+${val('permissions')}
+
+ЗАДАЧИ
+${val('tasks')}
+Календарь: ${val('calendar')}
+Уведомления: ${val('notifications')}
+
+КОММУНИКАЦИИ
+Каналы:
+${val('communications')}
+Интеграции:
+${val('integrations')}
+
+ДОКУМЕНТЫ И ФИНАНСЫ
+Документы:
+${val('documents')}
+Финансы:
+${val('finance')}
+
+АНАЛИТИКА
+${val('analytics')}
+Экспорт: ${val('export')}
+Dashboard: ${val('dashboard')}
+
+ИНТЕРФЕЙС
+Устройства: ${val('devices')}
+Стиль: ${val('style')}
+Размещение: ${val('hosting')}
+Стек: ${val('stack')}
+
+ИИ
+${val('ai')}
+
+АВТОМАТИЗАЦИЯ
+${val('automation')}
+
+MVP
+${val('mvp')}
+
+ПОЗЖЕ
+${val('later')}
+
+РАБОЧИЙ ПРОЦЕСС
+${val('workflow')}
+
+ДОПОЛНИТЕЛЬНО
+${val('extra')}
+
+========================
+ТРЕБУЕМЫЙ РЕЗУЛЬТАТ
+========================
+1. Анализ требований.
+2. Архитектура.
+3. Выбор стека.
+4. ER-схема базы данных.
+5. Модели данных.
+6. API endpoints.
+7. Авторизация и RBAC.
+8. UX/UI и структура экранов.
+9. Frontend.
+10. Backend.
+11. База данных и миграции.
+12. Валидация.
+13. Обработка ошибок.
+14. Безопасность.
+15. Интеграции.
+16. ИИ-функции.
+17. Автоматизация бизнес-процессов.
+18. Dashboard и отчёты.
+19. Тестовые данные.
+20. Тесты ключевых сценариев.
+21. Docker/инструкция запуска, если применимо.
+22. План дальнейшего развития.
+
+Начни с краткого анализа требований и архитектуры, затем переходи к реализации.`;
+}
+
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!form.checkValidity()){
+   const bad=[...form.querySelectorAll(':invalid')][0];
+   document.getElementById('modalText').textContent='Заполните обязательные поля: «'+(bad?.previousElementSibling?.textContent||bad?.name||'поля')+'».';
+   document.getElementById('modal').style.display='flex'; bad?.focus(); return;
+ }
+
+ const prompt=makePrompt(), org=val('org'), name=val('contactName'), phone=val('phone'), email=val('contactEmail');
+ const safe=(org==='Не указано'?'CRM_project':org).replace(/[^a-zа-яё0-9_-]+/gi,'_');
+ const publicPrice='от 10 000 ₽';
+ const est=estimate();
+
+ const lead={
+   org, name, phone, email,
+   publicPrice,
+   internalScore: est.score,
+   internalPrice: est.price,
+   internalLevel: est.level,
+   prompt,
+   form: Object.fromEntries(new FormData(form).entries())
+ };
+
+ const btn=document.getElementById('submitBtn');
+ btn.disabled=true;
+ btn.textContent='ОТПРАВКА...';
+
+ let saved=false;
+ try{
+   const response=await fetch('/api/leads',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify(lead)
+   });
+   if(response.ok) saved=true;
+ }catch(err){
+   console.warn('API storage unavailable',err);
+ }
+
+ // Download the generated prompt for the customer.
+ const blob=new Blob([prompt],{type:'text/plain;charset=utf-8'}), a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=safe+'_CRM_TZ_PROMPT.txt';document.body.appendChild(a);a.click();a.remove();
+
+ // Keep email notification as a backup notification channel.
+ document.getElementById('emailSubject').value='Новая заявка на CRM: '+org;
+ document.getElementById('emailName').value=name;
+ document.getElementById('emailPhone').value=phone;
+ document.getElementById('emailClientEmail').value=email;
+ document.getElementById('emailEstimate').value=publicPrice;
+ document.getElementById('emailPrompt').value=prompt;
+ try{ document.getElementById('emailForm').submit(); }catch(err){ console.warn('Email notification failed',err); }
+
+ document.getElementById('success').style.display='block';
+ document.getElementById('successText').textContent=saved
+   ? 'Заявка сохранена. TXT-файл скачан. Мы свяжемся с вами после изучения требований.'
+   : 'TXT-файл скачан. Заявка подготовлена, но серверное сохранение пока недоступно.';
+ document.getElementById('success').scrollIntoView({behavior:'smooth',block:'center'});
+ btn.textContent=saved?'ОТПРАВЛЕНО ✓':'ПОВТОРИТЬ ОТПРАВКУ';
+ btn.disabled=false;
+}););
+
+document.getElementById('clearBtn').addEventListener('click',()=>{form.reset();progress();document.getElementById('success').style.display='none';window.scrollTo({top:0,behavior:'smooth'})});
+</script>
+</body></html>
